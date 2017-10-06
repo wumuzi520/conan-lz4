@@ -1,4 +1,4 @@
-from conans import ConanFile, CMake, tools, os
+from conans import ConanFile, tools, os
 
 class LZ4Conan(ConanFile):
     name = "LZ4"
@@ -14,7 +14,7 @@ class LZ4Conan(ConanFile):
             
     def source(self):
         source_url = "https://github.com/lz4/lz4"
-        tools.get("{0}/{1}/archive/v{2}.tar.gz".format(source_url, self.lib_short_name, self.version)
+        tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
                 
     def build(self):
         if self.settings.os == "Windows":
@@ -24,10 +24,11 @@ class LZ4Conan(ConanFile):
             else: 
                 target = "liblz4-dll"
             vcvars_cmd = tools.vcvars_command(self.settings)
-            build_cmd = tools.msvc_build_command(self.settings, sln_path=sln , target=target)
-            self.run("{0} && {1}".format(vcvars_cmd, build_cmd))
-        if self.settings.os == "Linux":
-        if self.settings.os == "Darwin":
+            build_cmd = tools.msvc_build_command(self.settings, sln_path=sln , targets=[target])
+            platform_toolset = {'14': 'vs140', '15':  'vs140'}[str(self.settings.compiler.version)]
+            self.run("{0} && {1} /property:PlatformToolset={2}".format(vcvars_cmd, build_cmd, platform_toolset))
+        #if self.settings.os == "Linux":
+        #if self.settings.os == "Darwin":
        
     
     def package(self):
