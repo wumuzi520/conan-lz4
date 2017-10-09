@@ -20,19 +20,23 @@ class LZ4Conan(ConanFile):
         if self.settings.os == "Windows":
             sln = os.path.join(self.archive_name, "visual", "vs2010", "lz4.sln")
             if self.options.shared:
-                target = "liblz4"
-            else: 
                 target = "liblz4-dll"
+            else: 
+                target = "liblz4"
             vcvars_cmd = tools.vcvars_command(self.settings)
             build_cmd = tools.msvc_build_command(self.settings, sln_path=sln , targets=[target])
-            platform_toolset = {'14': 'vs140', '15':  'vs140'}[str(self.settings.compiler.version)]
-            self.run("{0} && {1} /property:PlatformToolset={2}".format(vcvars_cmd, build_cmd, platform_toolset))
+            self.run("{0} && {1}".format(vcvars_cmd, build_cmd))
+
         #if self.settings.os == "Linux":
         #if self.settings.os == "Darwin":
        
     
     def package(self):
-        self.copy("*.h", dst="include", src=os.path.join(self.lib_short_name, "include"))
+
+        # yes, headers are in lib
+        include_dir = os.path.join("%s-%s" % ( self.name, self.version ), 'lib')
+
+        self.copy(pattern="lz4*.h", dst="include", src=include_dir, keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("*.so*", dst="lib", keep_path=False)
         self.copy("*.dylib", dst="lib", keep_path=False)
@@ -41,3 +45,4 @@ class LZ4Conan(ConanFile):
             
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
+        #self.cpp_info.includedirs = ['include']
