@@ -25,6 +25,7 @@ class LZ4Conan(ConanFile):
                 target = "liblz4"
             vcvars_cmd = tools.vcvars_command(self.settings)
             build_cmd = tools.msvc_build_command(self.settings, sln_path=sln , targets=[target])
+            build_cmd = build_cmd.replace('"x86"', '"Win32"')
             self.run("{0} && {1}".format(vcvars_cmd, build_cmd))
 
         #if self.settings.os == "Linux":
