@@ -47,4 +47,4 @@ This is a header only library, so nothing needs to be built.
     $ conan upload LZ4/1.8.0@bincrafters/stable --all -r bincrafters
 
 ### License
-[Boost](www.boost.org/LICENSE_1_0.txt)
+[BSD 2-Clause](https://github.com/lz4/lz4/blob/dev/lib/LICENSE)
