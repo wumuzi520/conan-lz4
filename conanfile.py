@@ -28,8 +28,9 @@ class LZ4Conan(ConanFile):
             self.run("{0} && {1}".format(vcvars_cmd, build_cmd))
 
         #if self.settings.os == "Linux":
+        #TODO: Populate this
         #if self.settings.os == "Darwin":
-       
+       #TODO: Populate this
     
     def package(self):
 
@@ -45,4 +46,3 @@ class LZ4Conan(ConanFile):
             
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
-        #self.cpp_info.includedirs = ['include']
