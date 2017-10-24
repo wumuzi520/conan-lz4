@@ -35,6 +35,16 @@ class LZ4Conan(ConanFile):
                 self.run(command)
          
     def build(self):
+        # if self.settings.os == "Windows":
+        # sln = os.path.join(self.archive_name, "visual", "vs2010", "lz4.sln")
+        # if self.options.shared:
+            # target = "liblz4-dll"
+        # else: 
+            # target = "liblz4"
+        # vcvars_cmd = tools.vcvars_command(self.settings)
+        # build_cmd = tools.msvc_build_command(self.settings, sln_path=sln , targets=[target])
+        # build_cmd = build_cmd.replace('"x86"', '"Win32"')
+        # self.run("{0} && {1}".format(vcvars_cmd, build_cmd))
         env_build = AutoToolsBuildEnvironment(self)
         with tools.environment_append(env_build.vars):
             self._run_cmd("make")
