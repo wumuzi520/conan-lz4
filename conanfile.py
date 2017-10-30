@@ -39,6 +39,20 @@ class LZ4Conan(ConanFile):
     def build_vs(self):
         with tools.chdir(os.path.join('sources', 'visual', 'VS2010')):
             target = 'liblz4-dll' if self.options.shared else 'liblz4'
+
+            if self.settings.compiler.runtime == 'MD':
+                runtime = 'MultiThreadedDLL'
+            elif self.settings.compiler.runtime == 'MDd':
+                runtime = 'MultiThreadedDebugDLL'
+            elif self.settings.compiler.runtime == 'MT':
+                runtime = 'MultiThreaded'
+            elif self.settings.compiler.runtime == 'MTd':
+                runtime = 'MultiThreadedDebug'
+
+            path = os.path.join(target, '%s.vcxproj' % target)
+            tools.replace_in_file(path, search='</ClCompile>',
+                                  replace='<RuntimeLibrary>%s</RuntimeLibrary></ClCompile>' % runtime)
+
             arch = 'Win32' if self.settings.arch == 'x86' else 'x64'
             command = tools.msvc_build_command(self.settings, os.path.join(os.getcwd(), 'lz4.sln'),
                                                arch=arch, targets=[target])
