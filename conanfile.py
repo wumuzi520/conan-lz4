@@ -1,4 +1,5 @@
-from conans import ConanFile, AutoToolsBuildEnvironment, tools, os
+from conans import ConanFile, AutoToolsBuildEnvironment, tools
+import os
 
 class LZ4Conan(ConanFile):
     name = "LZ4"
@@ -27,40 +28,45 @@ class LZ4Conan(ConanFile):
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
         os.rename(self.archive_name, "sources")
 
-    def _run_cmd(self, command):
+    def build_make(self):
+        install_dir = os.path.abspath('lz4-install')
         with tools.chdir("sources"):
-            if self.settings.os == "Windows":
-                tools.run_in_windows_bash(self, command)
-            else:
-                self.run(command)
+            env_build = AutoToolsBuildEnvironment(self)
+            with tools.environment_append(env_build.vars):
+                self.run("make")
+                self.run("make DESTDIR=%s install" % install_dir)
+
+    def build_vs(self):
+        with tools.chdir(os.path.join('sources', 'visual', 'VS2010')):
+            target = 'liblz4-dll' if self.options.shared else 'liblz4'
+            arch = 'Win32' if self.settings.arch == 'x86' else 'x64'
+            command = tools.msvc_build_command(self.settings, os.path.join(os.getcwd(), 'lz4.sln'),
+                                               arch=arch, targets=[target])
+            self.run(command)
          
     def build(self):
-        # if self.settings.os == "Windows":
-        # sln = os.path.join(self.archive_name, "visual", "vs2010", "lz4.sln")
-        # if self.options.shared:
-            # target = "liblz4-dll"
-        # else: 
-            # target = "liblz4"
-        # vcvars_cmd = tools.vcvars_command(self.settings)
-        # build_cmd = tools.msvc_build_command(self.settings, sln_path=sln , targets=[target])
-        # build_cmd = build_cmd.replace('"x86"', '"Win32"')
-        # self.run("{0} && {1}".format(vcvars_cmd, build_cmd))
-        env_build = AutoToolsBuildEnvironment(self)
-        with tools.environment_append(env_build.vars):
-            self._run_cmd("make")
-         
-    def package(self):
+        if self.settings.os == "Windows":
+            self.build_vs()
+        else:
+            self.build_make()
 
+    def package(self):
+        if self.settings.os == "Windows":
+            include_dir = os.path.join('sources', 'lib')
+            self.copy(pattern="lz4*.h", dst="include", src=include_dir, keep_path=False)
+            arch = 'Win32' if self.settings.arch == 'x86' else 'x64'
+            bin_dir = os.path.join('sources', 'visual', 'VS2010', 'bin', '%s_%s' %
+                                   (arch, self.settings.build_type))
+            if self.options.shared:
+                self.copy("*.dll", dst='bin', src=bin_dir, keep_path=False)
+            self.copy("*.lib", dst='lib', src=bin_dir, keep_path=False)
         # # yes, headers are in lib
         # include_dir = os.path.join("%s-%s" % ( self.name, self.version ), 'lib')
 
         # self.copy(pattern="lz4*.h", dst="include", src=include_dir, keep_path=False)
-        # self.copy("*.dll", dst="bin", keep_path=False)
         # self.copy("*.so*", dst="lib", keep_path=False)
         # self.copy("*.dylib", dst="lib", keep_path=False)
         # self.copy("*.a", dst="lib", keep_path=False)
-        # self.copy("*.lib", dst="lib", keep_path=False)
-        self.run("make install")
             
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
