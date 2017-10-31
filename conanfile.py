@@ -53,9 +53,9 @@ class LZ4Conan(ConanFile):
             tools.replace_in_file(path, search='</ClCompile>',
                                   replace='<RuntimeLibrary>%s</RuntimeLibrary></ClCompile>' % runtime)
 
-            arch = 'Win32' if self.settings.arch == 'x86' else 'x64'
-            command = tools.msvc_build_command(self.settings, os.path.join(os.getcwd(), 'lz4.sln'),
-                                               arch=arch, targets=[target])
+            command = tools.msvc_build_command(self.settings, os.path.join(os.getcwd(), 'lz4.sln'), targets=[target])
+            if self.settings.arch == 'x86':
+                command = command.replace('/p:Platform="x86"', '/p:Platform="Win32"')
             self.run(command)
          
     def build(self):
