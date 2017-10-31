@@ -8,20 +8,16 @@ class LZ4Conan(ConanFile):
     license = "https://github.com/lz4/lz4/blob/master/lib/LICENSE"
     url = "https://github.com/bincrafters/conan-lz4"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "with_msys": [True, False]}
-    default_options = "shared=False", "with_msys=True"
+    options = {"shared": [True, False]}
+    default_options = "shared=False"
     lib_short_name = "lz4"
     archive_name = "{0}-{1}".format(lib_short_name, version)
     
     def configure(self):
-        if self.settings.os != "Windows":
-            self.options.with_msys = "False"
+        pass
 
     def build_requirements(self):
-        if self.options.with_msys:
-            self.build_requires("msys2_installer/latest@bincrafters/stable")
-        elif self.settings.os == 'Windows' and 'MSYS_ROOT' not in os.environ:
-            raise Exception("MSYS_ROOT environment variable must exist if with_msys=False.") 
+        pass
             
     def source(self):
         source_url = "https://github.com/lz4/lz4"
