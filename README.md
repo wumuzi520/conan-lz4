@@ -1,3 +1,6 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/2vte702l4dv7craq/branch/testing/1.8.0?svg=true)](https://ci.appveyor.com/project/BinCrafters/conan-lz4/branch/testing/1.8.0)
+[![Build Status](https://travis-ci.org/bincrafters/conan-lz4.svg?branch=stable%2F1.8.0)](https://travis-ci.org/bincrafters/conan-lz4)
+
 # This repository holds a recipe for the LZ4 compression library
 
 [Conan.io](https://conan.io) package for [LZ4](http://www.lz4.org) project
