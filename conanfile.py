@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 import os
+
 
 class LZ4Conan(ConanFile):
     name = "LZ4"
@@ -12,12 +16,6 @@ class LZ4Conan(ConanFile):
     default_options = "shared=False"
     lib_short_name = "lz4"
     archive_name = "{0}-{1}".format(lib_short_name, version)
-    
-    def configure(self):
-        pass
-
-    def build_requirements(self):
-        pass
             
     def source(self):
         source_url = "https://github.com/lz4/lz4"
@@ -31,6 +29,14 @@ class LZ4Conan(ConanFile):
             with tools.environment_append(env_build.vars):
                 self.run("make")
                 self.run("make DESTDIR=%s install" % install_dir)
+
+                if self.settings.os == 'Macos' and self.options.shared:
+                    lib_dir = os.path.join(install_dir, 'usr', 'local', 'lib')
+                    old = '/usr/local/lib/liblz4.1.dylib'
+                    new = 'liblz4.1.dylib'
+                    for lib in os.listdir(lib_dir):
+                        if lib.endswith('.dylib'):
+                            self.run('install_name_tool -change %s %s %s' % (old, new, os.path.join(lib_dir, lib)))
 
     def build_vs(self):
         with tools.chdir(os.path.join('sources', 'visual', 'VS2010')):
@@ -70,13 +76,20 @@ class LZ4Conan(ConanFile):
             if self.options.shared:
                 self.copy("*.dll", dst='bin', src=bin_dir, keep_path=False)
             self.copy("*.lib", dst='lib', src=bin_dir, keep_path=False)
-        # # yes, headers are in lib
-        # include_dir = os.path.join("%s-%s" % ( self.name, self.version ), 'lib')
-
-        # self.copy(pattern="lz4*.h", dst="include", src=include_dir, keep_path=False)
-        # self.copy("*.so*", dst="lib", keep_path=False)
-        # self.copy("*.dylib", dst="lib", keep_path=False)
-        # self.copy("*.a", dst="lib", keep_path=False)
+        else:
+            include_dir = os.path.join('lz4-install', 'usr', 'local', 'include')
+            lib_dir = os.path.join('lz4-install', 'usr', 'local', 'lib')
+            self.copy(pattern="*.h", dst="include", src=include_dir, keep_path=False)
+            if str(self.settings.os) in ['Macos', 'iOS', 'watchOS', 'tvOS']:
+                if self.options.shared:
+                    self.copy("*.dylib", dst='lib', src=lib_dir, keep_path=False)
+                else:
+                    self.copy("*.a", dst='lib', src=lib_dir, keep_path=False)
+            elif str(self.settings.os) in ['Linux', 'Android']:
+                if self.options.shared:
+                    self.copy("*.so*", dst='lib', src=lib_dir, keep_path=False)
+                else:
+                    self.copy("*.a", dst='lib', src=lib_dir, keep_path=False)
             
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
