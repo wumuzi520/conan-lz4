@@ -17,7 +17,7 @@ class LZ4Conan(ConanFile):
     default_options = "shared=False"
             
     def source(self):
-        archive_name = "{0}-{1}".format(name, version)
+        archive_name = "{0}-{1}".format(self.name, self.version)
         source_url = "https://github.com/lz4/lz4"
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
         os.rename(archive_name, "sources")
