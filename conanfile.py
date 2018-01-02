@@ -6,21 +6,21 @@ import os
 
 
 class LZ4Conan(ConanFile):
-    name = "LZ4"
+    name = "lz4"
     version = "1.8.0"
     description = "Extremely Fast Compression algorithm"
-    license = "https://github.com/lz4/lz4/blob/master/lib/LICENSE"
+    license = "BSD 2-Clause, BSD 3-Clause"
+    exports = ["LICENSE.md"]
     url = "https://github.com/bincrafters/conan-lz4"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = "shared=False"
-    lib_short_name = "lz4"
-    archive_name = "{0}-{1}".format(lib_short_name, version)
             
     def source(self):
+        archive_name = "{0}-{1}".format(lib_short_name, version)
         source_url = "https://github.com/lz4/lz4"
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
-        os.rename(self.archive_name, "sources")
+        os.rename(archive_name, "sources")
 
     def build_make(self):
         install_dir = os.path.abspath('lz4-install')
