@@ -10,21 +10,23 @@ environment:
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 12
           CONAN_BUILD_TYPES: Release
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-          CONAN_VISUAL_VERSIONS: 12
-          CONAN_BUILD_TYPES: Debug
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-          CONAN_VISUAL_VERSIONS: 14
-          CONAN_BUILD_TYPES: Release
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-          CONAN_VISUAL_VERSIONS: 14
-          CONAN_BUILD_TYPES: Debug
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-          CONAN_VISUAL_VERSIONS: 15
-          CONAN_BUILD_TYPES: Release
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-          CONAN_VISUAL_VERSIONS: 15
-          CONAN_BUILD_TYPES: Debug
+        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          # CONAN_VISUAL_VERSIONS: 12
+          # CONAN_BUILD_TYPES: Debug
+        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          # CONAN_VISUAL_VERSIONS: 14
+          # CONAN_BUILD_TYPES: Release
+        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          # CONAN_VISUAL_VERSIONS: 14
+          # CONAN_BUILD_TYPES: Debug
+        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          # CONAN_VISUAL_VERSIONS: 15
+          # CONAN_BUILD_TYPES: Release
+        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          # CONAN_VISUAL_VERSIONS: 15
+          # CONAN_BUILD_TYPES: Debug
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   
 install:
   - set PATH=%PATH%;%PYTHON%/Scripts/
@@ -34,6 +36,6 @@ install:
   
 test_script:
   - python build.py
-  - type "C:\\Users\\appveyor\\.conan\\data\\lz4\\1.8.0\\bincrafters\\stable\\build\\8acc013b124da976880660b17a7d8021e2f49ff4\\sources\\visual\\VS2010\\UpgradeLog.htm"
 
- 
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))  
