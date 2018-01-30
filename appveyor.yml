@@ -34,4 +34,6 @@ install:
   
 test_script:
   - python build.py
+  - type "C:\\Users\\appveyor\\.conan\\data\\lz4\\1.8.0\\bincrafters\\stable\\build\\8acc013b124da976880660b17a7d8021e2f49ff4\\sources\\visual\\VS2010\\UpgradeLog.htm"
+
  

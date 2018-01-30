@@ -12,6 +12,7 @@ class LZ4Conan(ConanFile):
     license = "BSD 2-Clause, BSD 3-Clause"
     url = "https://github.com/bincrafters/conan-lz4"
     exports = ["LICENSE.md"]
+    source_subfolder = "source_subfolder"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = "shared=False"
@@ -20,11 +21,11 @@ class LZ4Conan(ConanFile):
         archive_name = "{0}-{1}".format(self.name, self.version)
         source_url = "https://github.com/lz4/lz4"
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
-        os.rename(archive_name, "sources")
+        os.rename(archive_name, self.source_subfolder)
 
     def build_make(self):
         install_dir = os.path.abspath('lz4-install')
-        with tools.chdir("sources"):
+        with tools.chdir(self.source_subfolder):
             env_build = AutoToolsBuildEnvironment(self)
             with tools.environment_append(env_build.vars):
                 self.run("make")
@@ -39,7 +40,7 @@ class LZ4Conan(ConanFile):
                             self.run('install_name_tool -change %s %s %s' % (old, new, os.path.join(lib_dir, lib)))
 
     def build_vs(self):
-        with tools.chdir(os.path.join('sources', 'visual', 'VS2010')):
+        with tools.chdir(os.path.join(self.source_subfolder, 'visual', 'VS2010')):
             target = 'liblz4-dll' if self.options.shared else 'liblz4'
 
             if self.settings.compiler.runtime == 'MD':
@@ -51,11 +52,14 @@ class LZ4Conan(ConanFile):
             elif self.settings.compiler.runtime == 'MTd':
                 runtime = 'MultiThreadedDebug'
 
-            path = os.path.join(target, '%s.vcxproj' % target)
-            tools.replace_in_file(path, search='</ClCompile>',
-                                  replace='<RuntimeLibrary>%s</RuntimeLibrary></ClCompile>' % runtime)
+            proj_path = os.path.join(target, '%s.vcxproj' % target)
+            tools.replace_in_file(
+                proj_path, 
+                search='</ClCompile>',
+                replace='<RuntimeLibrary>%s</RuntimeLibrary></ClCompile>' % runtime)
 
-            command = tools.msvc_build_command(self.settings, os.path.join(os.getcwd(), 'lz4.sln'), targets=[target])
+            sln_path = os.path.join(os.getcwd(), 'lz4.sln')
+            command = tools.msvc_build_command(self.settings, sln_path, targets=[target])
             if self.settings.arch == 'x86':
                 command = command.replace('/p:Platform="x86"', '/p:Platform="Win32"')
             self.run(command)
@@ -67,12 +71,12 @@ class LZ4Conan(ConanFile):
             self.build_make()
 
     def package(self):
-        self.copy(pattern="LICENSE", dst="license", src="sources")
+        self.copy(pattern="LICENSE", dst="license", src=self.source_subfolder)
         if self.settings.os == "Windows":
-            include_dir = os.path.join('sources', 'lib')
+            include_dir = os.path.join(self.source_subfolder, 'lib')
             self.copy(pattern="lz4*.h", dst="include", src=include_dir, keep_path=False)
             arch = 'Win32' if self.settings.arch == 'x86' else 'x64'
-            bin_dir = os.path.join('sources', 'visual', 'VS2010', 'bin', '%s_%s' %
+            bin_dir = os.path.join(self.source_subfolder, 'visual', 'VS2010', 'bin', '%s_%s' %
                                    (arch, self.settings.build_type))
             if self.options.shared:
                 self.copy("*.dll", dst='bin', src=bin_dir, keep_path=False)
