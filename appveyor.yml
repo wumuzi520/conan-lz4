@@ -10,23 +10,21 @@ environment:
         - APPVEYOR_BUILD_WORKER_IMAGE: Previous Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 12
           CONAN_BUILD_TYPES: Release
-        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-          # CONAN_VISUAL_VERSIONS: 12
-          # CONAN_BUILD_TYPES: Debug
-        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-          # CONAN_VISUAL_VERSIONS: 14
-          # CONAN_BUILD_TYPES: Release
-        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-          # CONAN_VISUAL_VERSIONS: 14
-          # CONAN_BUILD_TYPES: Debug
-        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-          # CONAN_VISUAL_VERSIONS: 15
-          # CONAN_BUILD_TYPES: Release
-        # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-          # CONAN_VISUAL_VERSIONS: 15
-          # CONAN_BUILD_TYPES: Debug
-init:
-  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+        - APPVEYOR_BUILD_WORKER_IMAGE: Previous Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 12
+          CONAN_BUILD_TYPES: Debug
+        - APPVEYOR_BUILD_WORKER_IMAGE: Previous Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_BUILD_TYPES: Release
+        - APPVEYOR_BUILD_WORKER_IMAGE: Previous Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_BUILD_TYPES: Debug
+        - APPVEYOR_BUILD_WORKER_IMAGE: Previous Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_BUILD_TYPES: Release
+        - APPVEYOR_BUILD_WORKER_IMAGE: Previous Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_BUILD_TYPES: Debug
   
 install:
   - set PATH=%PATH%;%PYTHON%/Scripts/
@@ -36,6 +34,4 @@ install:
   
 test_script:
   - python build.py
-
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))  
+ 
