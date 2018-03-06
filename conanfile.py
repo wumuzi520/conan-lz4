@@ -10,8 +10,9 @@ class LZ4Conan(ConanFile):
     version = "1.7.5"
     description = "Extremely Fast Compression algorithm"
     license = "BSD 2-Clause, BSD 3-Clause"
-    url = "https://github.com/bincrafters/conan-lz4"
+    url = "https://github.com/wumuzi520/conan-lz4"
     exports = ["LICENSE.md"]
+    exports_sources = ["FindLZ4.cmake"]
     source_subfolder = "source_subfolder"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
@@ -71,6 +72,7 @@ class LZ4Conan(ConanFile):
             self.build_make()
 
     def package(self):
+        self.copy("FindLZ4.cmake", ".", ".")
         self.copy(pattern="LICENSE", dst="license", src=self.source_subfolder)
         if self.settings.os == "Windows":
             include_dir = os.path.join(self.source_subfolder, 'lib')
